@@ -1,8 +1,8 @@
 /**
  * MD5 Calc Server
- * @ moyo <dev@uuland.org>
+ * @ moyo <moyo@uuland.org>
  * @ 2012/06/08
- * @ http://md5.apiz.org/
+ * @ http://demo.uuland.org/~md5/
  */
 
 var port = 33921;
@@ -21,13 +21,17 @@ require('http').createServer(function (request, response){
         else if (urls.query.hex)
         {
                 var hex = urls.query.hex;
-                var arr = [];
-                for (var i = 0; i < hex.length; i=i+2)
-                {
-                        arr.push("\\x" + hex.substr(i, 2));
+                try {
+                        var arr = [];
+                        for (var i = 0; i < hex.length; i=i+2)
+                        {
+                                arr.push("\\x" + hex.substr(i, 2));
+                        }
+                        arr = arr.join("");
+                        eval("var string = '"+arr+"'");
+                } catch (e) {
+                        response.end('Hex Input Error');
                 }
-                arr = arr.join("");
-                eval("var string = '"+arr+"'");
         }
         else
         {
@@ -42,6 +46,10 @@ require('http').createServer(function (request, response){
         if (urls.query.mark)
         {
                 md5 = '^'+md5+'$';
+        }
+        if (urls.query.jsonp)
+        {
+                md5 = urls.query.jsonp + '("'+md5+'");';
         }
         response.end(md5);
 }).listen(port, '127.0.0.1');
